@@ -1,3 +1,4 @@
+from pyspark import SparkContext, SparkConf, SQLContext
 from pyspark.sql.types import ArrayType, StringType
 from konlpy.tag import Mecab
 import pyspark.sql.functions as F
@@ -10,6 +11,10 @@ m = Mecab()
 # setting for spark-submit
 conf = SparkConf().setAppName("wordcount")
 
+sc = SparkContext(conf=conf)
+sqlContext = SQLContext(sc)
+spark = sqlContext.sparkSession
+
 @F.udf(T.ArrayType(T.StringType()))
 def ko_tokenize(article:str) -> List[str]:
     """return words from the article with a token matching the pattern and not included in the stopwords"""
@@ -21,16 +26,9 @@ def ko_tokenize(article:str) -> List[str]:
     return [word for word,tag in m.pos(article) if re.search(pattern, tag) and word not in stopwords]
 
 
-# load data    
-# 이용할 것
-# today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
-# pipeline = '{"$match": {"news_date": {"$gte": ISODate("%s")}}}' % today
-
-# 테스트
-t = datetime.today()
-t = t - timedelta(days=2)
-today = t.replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
-pipeline = '{"$match": {"news_date": {"$gte": ISODate("2022-03-25T00:00:00.000Z")}}}'
+# load data
+today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
+pipeline = '{"$match": {"news_date": {"$gte": ISODate("%s")}}}' % today
 df = spark.read \
     .format("com.mongodb.spark.sql.DefaultSource")\
     .option("uri","mongodb://root:1234@mongodb1:27017")\
@@ -53,7 +51,7 @@ kid_word_count = token_df \
     .orderBy("news_date", 'count')
     
 # make kid_count_id as null for pk, rename columns
-# spark-submit - F.lit(None).cast('string') / pyspark - F.lit(0)
+# spark-submit - F.lit(None).cast('string') / pyspark shell - F.lit(0)
 kid_word_count = kid_word_count \
     .withColumn('count_id', F.lit(None).cast('string')) \
     .withColumnRenamed("news_date", "count_date") \

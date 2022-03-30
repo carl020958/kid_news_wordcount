@@ -51,7 +51,7 @@ with DAG(
         "executor_cores": "2",
         "executor_memory": "3072m",
         "jars": Variable.get("wordcount_jars"),
-        "application": "/opt/workspace/scripts/word_count_dump.py"
+        "application": "/opt/workspace/scripts/word_count_batch.py"
     }
 
 ) as dag:
