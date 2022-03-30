@@ -1,8 +1,7 @@
 from airflow.models import DAG
+from airflow.models import Variable
 from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
-# from airflow.providers.apache.spark.operators import spark_submit
-# from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
 from airflow.contrib.operators.ssh_operator import SSHOperator
 
 default_args = {
@@ -15,53 +14,59 @@ default_args = {
     'retry_delay': timedelta(minutes=1),
 }
 
-templated_bash_command = """/usr/bin/spark-3.1.2-bin-hadoop3.2/bin/spark-submit \
---master spark://spark-master:7077 \
---num-executors 3 \
---executor-cores 2 \
---executor-memory 3072m \
---jars /opt/workspace/jars/bson-4.0.5.jar,\
-/opt/workspace/jars/mongo-spark-connector_2.12-3.0.1.jar,\
-/opt/workspace/jars/mongodb-driver-core-4.0.5.jar,\
-/opt/workspace/jars/mongodb-driver-sync-4.0.5.jar,\
-/opt/workspace/jars/mysql-connector-java-8.0.21.jar \
-/opt/workspace/scripts/word_count_dump.py"""
+templated_bash_command1 = """
+    su - {{params.user}}
+    cd {{params.env_dir}}
+    source ./.venv/bin/activate
+    cd {{params.project_dir}}
+    scrapy crawl {{params.spider}}
+"""
 
-# mongo_jar1 = "/home/airflow/airflow/spark/jars/bson-4.0.5.jar,"
-# mongo_jar2 = "/home/airflow/airflow/spark/jars/mongo-spark-connector_2.12-3.0.1.jar,"
-# mongo_jar3 = "/home/airflow/airflow/spark/jars/mongodb-driver-core-4.0.5.jar,"
-# mongo_jar4 = "/home/airflow/airflow/spark/jars/mongodb-driver-sync-4.0.5.jar,"
-# mysql_jar = "/home/airflow/airflow/spark/jars/mysql-connector-java-8.0.21.jar"
+templated_bash_command2 = """
+    {{params.spark_submit}} \
+    --master {{params.master}} \
+    --num-executors {{params.num_executors}} \
+    --executor-cores {{params.executor_cores}} \
+    --executor-memory {{params.executor_memory}} \
+    --jars {{params.jars}} \
+    {{params.application}}
+"""
 
 with DAG(
-    'kid_news_wordcount',
-    schedule_interval='45 14 * * *',
+    "kid_news_wordcount",
+    schedule_interval="45 14 * * *",
     default_args=default_args,
     catchup=False,
+    params={
+        # params for scrapy
+        "user": "scrapy",
+        "env_dir": "/home/scrapy",
+        "project_dir": "/home/scrapy/scrapy/kidnewscrawling/kidnewscrawling",
+        "spider": "kidNewsSpiderCurrentAffairs",
+
+        # params for spark
+        "spark_submit": "/usr/bin/spark-3.1.2-bin-hadoop3.2/bin/spark-submit",
+        "master": "spark://spark-master:7077",
+        "num_executors": "3",
+        "executor_cores": "2",
+        "executor_memory": "3072m",
+        "jars": Variable.get("wordcount_jars"),
+        "application": "/opt/workspace/scripts/word_count_dump.py"
+    }
+
 ) as dag:
-    news_scrapy = BashOperator(
+    # task for kid news scraping
+    news_scrapy = SSHOperator(
         task_id="kid_news_scrapy",
-        bash_command="sh /home/airflow/scrapy/kidnewscrawling/scrape.sh "
+        ssh_conn_id="ssh_scrapy",
+        command=templated_bash_command1,
+        dag=dag
     )
-    # wordcount = SparkSubmitOperator(
-    #     task_id="wordcount",
-    #     conn_id="spark_standalone",
-    #     application="/home/airflow/airflow/spark/applications/word_count_dump.py",
-    #     total_executor_cores="6",
-    #     executor_cores="2",
-    #     executor_memory="3072m",
-    #     num_executors="3",
-    #     name="spark-wordcount",
-    #     verbose=False,
-    #     driver_memory="2g",
-    #     jars=mongo_jar1 + mongo_jar2 + mongo_jar3 + mongo_jar4 + mysql_jar,
-    #     dag=dag
-    # )
-    
+    # task for wordcount
     wordcount = SSHOperator(
         task_id="wordcount",
         ssh_conn_id="ssh_spark",
-        command=templated_bash_command,
+        command=templated_bash_command2,
         dag=dag
     )
 
