@@ -1,20 +1,6 @@
 version: "3.6"
 
 services:
-
-# # spark
-#   jupyterlab:
-#     image: jupyterlab
-#     container_name: jupyterlab
-#     restart: always
-#     ports:
-#       - 8888:8888
-#     volumes:
-#       - shared-workspace:/opt/workspace
-#       - /Users/zsu/Projects/DE/encore/spark_nlp/scripts:/opt/workspace/scripts
-#     networks:
-#       - sparknet
-  
   spark-master:
     image: spark-master
     container_name: spark-master
@@ -61,23 +47,6 @@ services:
       - sparknet
     depends_on:
       - spark-master
-
-  # spark-worker-3:
-  #   image: spark-worker
-  #   container_name: spark-worker-3
-  #   restart: always
-  #   # environment:
-  #   #   SPARK_WORKER_CORES: "2"
-  #   #   SPARK_WORKER_MEMORY: "4096m"
-  #   ports:
-  #     - 8083:8081
-  #   volumes:
-  #     - shared-workspace:/opt/workspace
-  #     - /Users/zsu/Projects/DE/encore/spark_nlp/scripts:/opt/workspace/scripts
-  #   networks:
-  #     - sparknet
-  #   depends_on:
-  #     - spark-master
 
 # volumes
 volumes:
