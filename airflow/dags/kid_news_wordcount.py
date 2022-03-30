@@ -1,13 +1,13 @@
 from airflow.models import DAG
 from airflow.models import Variable
-from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 from airflow.contrib.operators.ssh_operator import SSHOperator
 
 default_args = {
     'owner': 'admin',
     'depends_on_past': False,
-    'start_date': datetime(2022, 3, 21),
+    'start_date': datetime(2022, 3, 29),
+    'catchup': False,
     'email_on_failure': True,
     'email_on_retry': False,
     'retries': 2,
@@ -34,7 +34,7 @@ templated_bash_command2 = """
 
 with DAG(
     "kid_news_wordcount",
-    schedule_interval="45 14 * * *",
+    schedule_interval="10 15 * * *",
     default_args=default_args,
     catchup=False,
     params={
@@ -56,7 +56,7 @@ with DAG(
 
 ) as dag:
     # task for kid news scraping
-    news_scrapy = SSHOperator(
+    kid_news_scrapy = SSHOperator(
         task_id="kid_news_scrapy",
         ssh_conn_id="ssh_scrapy",
         command=templated_bash_command1,
@@ -70,4 +70,4 @@ with DAG(
         dag=dag
     )
 
-news_scrapy >> wordcount
+kid_news_scrapy >> wordcount
