@@ -1,4 +1,4 @@
-## kid_news_wordcount
+## News_wordcount
 
 ### Data-Flow
 <p align="center">
