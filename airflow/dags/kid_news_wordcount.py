@@ -14,15 +14,15 @@ default_args = {
     'retry_delay': timedelta(minutes=1),
 }
 
-templated_bash_command1 = """
+templated_bash_command_scrapy = """
     su - {{params.user}}
-    cd {{params.env_dir}}
+    cd {{params.scrapy_env_dir}}
     source ./.venv/bin/activate
-    cd {{params.project_dir}}
+    cd {{params.scrapy_project_dir}}
     scrapy crawl {{params.spider}}
-"""
+""" 
 
-templated_bash_command2 = """
+templated_bash_command_pyspark = """
     {{params.spark_submit}} \
     --master {{params.master}} \
     --num-executors {{params.num_executors}} \
@@ -34,14 +34,14 @@ templated_bash_command2 = """
 
 with DAG(
     "kid_news_wordcount",
-    schedule_interval="10 15 * * *",
+    schedule_interval="45 14 * * *",
     default_args=default_args,
     catchup=False,
     params={
         # params for scrapy
         "user": "scrapy",
-        "env_dir": "/home/scrapy",
-        "project_dir": "/home/scrapy/scrapy/kidnewscrawling/kidnewscrawling",
+        "scrapy_env_dir": "/home/scrapy",
+        "scrapy_project_dir": "/home/scrapy/scrapy/kidnewscrawling/kidnewscrawling",
         "spider": "kidNewsSpiderCurrentAffairs",
 
         # params for spark
@@ -51,7 +51,7 @@ with DAG(
         "executor_cores": "2",
         "executor_memory": "3072m",
         "jars": Variable.get("wordcount_jars"),
-        "application": "/opt/workspace/scripts/word_count_batch.py"
+        "application": "/opt/workspace/scripts/kid_word_count_batch.py"
     }
 
 ) as dag:
@@ -59,15 +59,16 @@ with DAG(
     kid_news_scrapy = SSHOperator(
         task_id="kid_news_scrapy",
         ssh_conn_id="ssh_scrapy",
-        command=templated_bash_command1,
-        dag=dag
-    )
-    # task for wordcount
-    wordcount = SSHOperator(
-        task_id="wordcount",
-        ssh_conn_id="ssh_spark",
-        command=templated_bash_command2,
+        command=templated_bash_command_scrapy,
         dag=dag
     )
 
-kid_news_scrapy >> wordcount
+    # task for kid wordcount
+    kid_wordcount = SSHOperator(
+        task_id="kid_wordcount",
+        ssh_conn_id="ssh_spark",
+        command=templated_bash_command_pyspark,
+        dag=dag
+    )
+
+kid_news_scrapy >> kid_wordcount
