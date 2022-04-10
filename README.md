@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS adult_word_count(
 ```bash
 $SPARK_HOME/bin/pyspark \
 --master spark://spark-master:7077 \
---num-executors 3 \
---executor-cores 2 \
---executor-memory "3072m" \
+--num-executors 2 \
+--executor-cores 1 \
+--executor-memory "2048m" \
 --jars \
 /opt/workspace/jars/bson-4.0.5.jar,\
 /opt/workspace/jars/mongo-spark-connector_2.12-3.0.1.jar,\
