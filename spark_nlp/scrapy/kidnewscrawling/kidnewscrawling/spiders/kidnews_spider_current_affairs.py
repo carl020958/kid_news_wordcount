@@ -67,7 +67,7 @@ class kidNewsSpiderCurrentAffairs(scrapy.Spider):
         paragraphs = response.xpath('//div[@class="Paragraph"]//text()[normalize-space() \
                                                     and not(ancestor::*/@class="center_img") \
                                                     and not(ancestor::*/@class="right_img")]').extract()
-        p = " ".join([re.sub(r'[\r\n\t<사진>\xa0]', '', paragraph).strip() for paragraph in paragraphs])
+        p = " ".join([re.sub(r'\r|\n|\t|<사진>|\xa0]', '', paragraph).strip() for paragraph in paragraphs])
         item["news_article"] = p
 
         # 기사 첫 사진 이미지 url
