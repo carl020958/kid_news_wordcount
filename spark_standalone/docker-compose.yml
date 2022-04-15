@@ -12,7 +12,7 @@ services:
       - 7077:7077
     volumes:
       - shared-workspace:/opt/workspace
-      - /Users/zsu/Projects/DE/encore/spark_nlp/scripts:/opt/workspace/scripts
+      - /Users/zsu/Projects/DE/encore/spark_standalone/scripts:/opt/workspace/scripts
     networks:
       - sparknet
 
@@ -29,7 +29,7 @@ services:
       - 8081:8081
     volumes:
       - shared-workspace:/opt/workspace
-      - /Users/zsu/Projects/DE/encore/spark_nlp/scripts:/opt/workspace/scripts
+      - /Users/zsu/Projects/DE/encore/spark_standalone/scripts:/opt/workspace/scripts
     networks:
       - sparknet
     depends_on:
@@ -48,7 +48,7 @@ services:
       - 8082:8081
     volumes:
       - shared-workspace:/opt/workspace
-      - /Users/zsu/Projects/DE/encore/spark_nlp/scripts:/opt/workspace/scripts
+      - /Users/zsu/Projects/DE/encore/spark_standalone/scripts:/opt/workspace/scripts
     networks:
       - sparknet
     depends_on:
@@ -59,8 +59,6 @@ volumes:
   shared-workspace:
     name: "hadoop-distributed-file-system"
     driver: local
-  mongodb2:
-  mongodb_config2:
 
 # networks
 networks:
