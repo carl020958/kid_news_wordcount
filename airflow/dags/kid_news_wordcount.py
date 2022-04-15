@@ -48,7 +48,7 @@ with DAG(
         "spark_submit": "/usr/bin/spark-3.1.2-bin-hadoop3.2/bin/spark-submit",
         "master": "spark://spark-master:7077",
         "num_executors": "2",
-        "executor_cores": "1",
+        "executor_cores": "2",
         "executor_memory": "2048m",
         "jars": Variable.get("wordcount_jars"),
         "application": "/opt/workspace/scripts/kid_word_count_batch.py"

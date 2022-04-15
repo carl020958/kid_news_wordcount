@@ -25,12 +25,12 @@ CREATE TABLE IF NOT EXISTS adult_word_count(
 );
 ```
 
-### Pyspark-shell(for debugging)
+### Spark Standalone Pyspark-shell
 ```bash
 $SPARK_HOME/bin/pyspark \
 --master spark://spark-master:7077 \
 --num-executors 2 \
---executor-cores 1 \
+--executor-cores 2 \
 --executor-memory "2048m" \
 --jars \
 /opt/workspace/jars/bson-4.0.5.jar,\
@@ -39,3 +39,17 @@ $SPARK_HOME/bin/pyspark \
 /opt/workspace/jars/mongodb-driver-sync-4.0.5.jar,\
 /opt/workspace/jars/mysql-connector-java-8.0.21.jar
 ```
+
+### Spark on YARN Pyspark-shell
+$SPARK_HOME/bin/pyspark \
+--master yarn \
+--deploy-mode client \
+--num-executors 2 \
+--executor-cores 2 \
+--executor-memory "2048m" \
+--jars \
+/opt/workspace/jars/bson-4.0.5.jar,\
+/opt/workspace/jars/mongo-spark-connector_2.12-3.0.1.jar,\
+/opt/workspace/jars/mongodb-driver-core-4.0.5.jar,\
+/opt/workspace/jars/mongodb-driver-sync-4.0.5.jar,\
+/opt/workspace/jars/mysql-connector-java-8.0.21.
