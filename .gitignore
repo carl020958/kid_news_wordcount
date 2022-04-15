@@ -1,3 +1,5 @@
 .DS_Store
 __init__.py
 ref
+airflow/dags/__pycache__
+*.txt
