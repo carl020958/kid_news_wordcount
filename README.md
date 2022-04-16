@@ -41,6 +41,7 @@ $SPARK_HOME/bin/pyspark \
 ```
 
 ### Spark on YARN Pyspark-shell
+```bash
 $SPARK_HOME/bin/pyspark \
 --master yarn \
 --deploy-mode client \
@@ -53,3 +54,4 @@ $SPARK_HOME/bin/pyspark \
 /opt/workspace/jars/mongodb-driver-core-4.0.5.jar,\
 /opt/workspace/jars/mongodb-driver-sync-4.0.5.jar,\
 /opt/workspace/jars/mysql-connector-java-8.0.21.
+```
