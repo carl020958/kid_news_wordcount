@@ -55,3 +55,18 @@ $SPARK_HOME/bin/pyspark \
 /opt/workspace/jars/mongodb-driver-sync-4.0.5.jar,\
 /opt/workspace/jars/mysql-connector-java-8.0.21.jar
 ```
+
+### Spark & S3
+$SPARK_HOME/bin/pyspark \
+--master yarn \
+--deploy-mode client \
+--num-executors 2 \
+--executor-cores 2 \
+--executor-memory "2048m" \
+--conf "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem" \
+--conf "spark.hadoop.fs.s3a.access.key=[Access_Key_ID]]" \
+--conf "spark.hadoop.fs.s3a.secret.key=[Secret_Access_Key]" \
+--jars \
+/opt/workspace/jars/hadoop-aws-3.2.3.jar,\
+/opt/workspace/jars/aws-java-sdk-bundle-1.11.901.jar,\
+/opt/workspace/jars/mysql-connector-java-8.0.21.jar
