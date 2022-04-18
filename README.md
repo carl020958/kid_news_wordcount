@@ -6,6 +6,7 @@
 </p>
 
 ### Mariadb
+
 ```bash
 CREATE DATABASE news_db;
 USE news_db;
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS adult_word_count(
 ```
 
 ### Spark Standalone Pyspark-shell
+
 ```bash
 $SPARK_HOME/bin/pyspark \
 --master spark://spark-master:7077 \
@@ -41,6 +43,7 @@ $SPARK_HOME/bin/pyspark \
 ```
 
 ### Spark on YARN Pyspark-shell
+
 ```bash
 $SPARK_HOME/bin/pyspark \
 --master yarn \
@@ -57,6 +60,8 @@ $SPARK_HOME/bin/pyspark \
 ```
 
 ### Spark & S3
+
+```bash
 $SPARK_HOME/bin/pyspark \
 --master yarn \
 --deploy-mode client \
@@ -70,3 +75,4 @@ $SPARK_HOME/bin/pyspark \
 /opt/workspace/jars/hadoop-aws-3.2.3.jar,\
 /opt/workspace/jars/aws-java-sdk-bundle-1.11.901.jar,\
 /opt/workspace/jars/mysql-connector-java-8.0.21.jar
+```
