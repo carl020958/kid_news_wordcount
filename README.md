@@ -53,5 +53,5 @@ $SPARK_HOME/bin/pyspark \
 /opt/workspace/jars/mongo-spark-connector_2.12-3.0.1.jar,\
 /opt/workspace/jars/mongodb-driver-core-4.0.5.jar,\
 /opt/workspace/jars/mongodb-driver-sync-4.0.5.jar,\
-/opt/workspace/jars/mysql-connector-java-8.0.21.
+/opt/workspace/jars/mysql-connector-java-8.0.21.jar
 ```
