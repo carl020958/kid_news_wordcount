@@ -3,3 +3,4 @@ __init__.py
 ref
 airflow/dags/__pycache__
 *.txt
+*__pycache__*
