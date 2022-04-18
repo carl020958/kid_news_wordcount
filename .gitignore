@@ -4,3 +4,4 @@ ref
 airflow/dags/__pycache__
 *.txt
 *__pycache__*
+*.json
