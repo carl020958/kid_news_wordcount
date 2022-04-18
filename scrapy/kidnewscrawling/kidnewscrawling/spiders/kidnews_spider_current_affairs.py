@@ -10,9 +10,9 @@ class kidNewsSpiderCurrentAffairs(scrapy.Spider):
     name = "kidNewsSpiderCurrentAffairs"
     page = 1
     articles = 0
-    # stop_date = '2020-08-31'
-    # stop_date = datetime.strptime(stop_date, "%Y-%m-%d").date()
-    stop_date = (datetime.now() - timedelta(1)).date()
+    # stop_date = '2020-08-31' # dump
+    # stop_date = datetime.strptime(stop_date, "%Y-%m-%d").date() # dump
+    stop_date = (datetime.now() - timedelta(1)).date() # daily batch
     
     
     def start_requests(self):
@@ -60,8 +60,8 @@ class kidNewsSpiderCurrentAffairs(scrapy.Spider):
         date = response.xpath('//span[@class="date"]/text()').extract_first()
         date = re.sub(r'[\r\n\t]', '', date).strip()[5:21]
         date = re.sub(r'[\.]', '-', date)
-        # item["news_date"] = date
-        item["news_date"] = datetime.strptime(date, '%Y-%m-%d %H:%M')
+        item["news_date"] = date # str
+        # item["news_date"] = datetime.strptime(date, '%Y-%m-%d %H:%M') # datetime
         
         # 본문
         paragraphs = response.xpath('//div[@class="Paragraph"]//text()[normalize-space() \
@@ -81,8 +81,8 @@ class kidNewsSpiderCurrentAffairs(scrapy.Spider):
         item["news_source"] = "어린이조선일보"
 
         # date가 stop_date와 같으면 pass 및 loop 종료 위해 0
-        # if datetime.strptime(date, "%Y-%m-%d %H:%M").date() <= kidNewsSpiderCurrentAffairs.stop_date:
-        if item["news_date"].date() <= kidNewsSpiderCurrentAffairs.stop_date:
+        if datetime.strptime(date, "%Y-%m-%d %H:%M").date() <= kidNewsSpiderCurrentAffairs.stop_date: # daily batch
+        # if item["news_date"].date() <= kidNewsSpiderCurrentAffairs.stop_date: # dump
             kidNewsSpiderCurrentAffairs.page = 0
             return
 

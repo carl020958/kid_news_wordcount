@@ -21,13 +21,28 @@ FEED_EXPORT_ENCODING = 'utf-8'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
-# mongodb setting
-LOG_LEVEL='ERROR'
+# # mongodb setting
+# LOG_LEVEL='ERROR'
 
-ITEM_PIPELINES = {'kidnewscrawling.pipelines.MongoPipeline': 300,}
+# ITEM_PIPELINES = {'kidnewscrawling.pipelines.MongoPipeline': 300,}
 
-MONGO_URI = 'mongodb://root:1234@mongodb1:27017'
-MONGO_DATABASE = 'news_db'
+# MONGO_URI = 'mongodb://root:1234@mongodb1:27017'
+# MONGO_DATABASE = 'news_db'
+
+# S3 setting
+import json
+
+with open("/home/scrapy/scrapy/kidnewscrawling/kidnewscrawling/.credentials.json", "r") as credential:
+    credential = json.load(credential)
+    ACCESS_KEY_ID = credential["AWS_ACCESS_KEY_ID"]
+    SECRET_ACCESS_KEY = credential["AWS_SECRET_ACCESS_KEY"]
+
+ITEM_PIPELINES = {'s3pipeline.S3Pipeline': 100,}
+
+S3PIPELINE_URL = 's3://nft-kid-news/kid_news/{time}-items-{chunk:07d}.json'
+
+AWS_ACCESS_KEY_ID = ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = SECRET_ACCESS_KEY
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
