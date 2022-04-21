@@ -34,12 +34,14 @@ import json
 
 with open("/home/scrapy/scrapy/kidnewscrawling/kidnewscrawling/.credentials.json", "r") as credential:
     credential = json.load(credential)
+    S3_URL = credential["S3_URL"]
     ACCESS_KEY_ID = credential["AWS_ACCESS_KEY_ID"]
     SECRET_ACCESS_KEY = credential["AWS_SECRET_ACCESS_KEY"]
 
 ITEM_PIPELINES = {'s3pipeline.S3Pipeline': 100,}
 
-S3PIPELINE_URL = 's3://nft-kid-news/kid_news/{time}-items-{chunk:07d}.json'
+S3PIPELINE_URL = f's3://{S3_URL}/{{time}}-items-{{chunk:07d}}.json'
+# S3PIPELINE_URL = f's3://{S3_URL}/{{time}}-items-{{chunk:07d}}.json'
 
 AWS_ACCESS_KEY_ID = ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = SECRET_ACCESS_KEY
