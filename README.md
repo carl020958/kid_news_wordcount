@@ -69,7 +69,7 @@ $SPARK_HOME/bin/pyspark \
 --executor-cores 2 \
 --executor-memory "2048m" \
 --conf "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem" \
---conf "spark.hadoop.fs.s3a.access.key=[Access_Key_ID]]" \
+--conf "spark.hadoop.fs.s3a.access.key=[Access_Key_ID]" \
 --conf "spark.hadoop.fs.s3a.secret.key=[Secret_Access_Key]" \
 --jars \
 /opt/workspace/jars/hadoop-aws-3.2.3.jar,\
