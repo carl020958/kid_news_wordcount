@@ -27,10 +27,18 @@ if __name__ == "__main__":
         .builder \
         .appName("kid_wordcount") \
         .getOrCreate()
+        
+    # get credential data
+    with open("/opt/workspace/src/.credentials.json", "r") as credential:
+        credential = json.load(credential)
+        S3_URL = credential["S3_URL"]
+        AWS_RDS_URL = credential["AWS_RDS_URL"]
+        AWS_RDS_USER = credential["AWS_RDS_USER"]
+        AWS_RDS_PASSWORD = credential["AWS_RDS_PASSWORD"]
 
     # load data
     today = date.today().strftime("%Y-%m-%d")
-    df = spark.read.json(f"s3a://nft-kid-news/kid_news/{today}*.json")
+    df = spark.read.json(f"s3a://{S3_URL}/{today}*.json")
 
     # apply function
     token_df = df \
@@ -53,13 +61,6 @@ if __name__ == "__main__":
         .withColumnRenamed("article_word", "word") \
         .withColumnRenamed("count", "count") \
         .select("word_count_id", "date", "word", "count")
-        
-    # get credential data
-    with open("/opt/workspace/src/.credentials.json", "r") as credential:
-        credential = json.load(credential)
-        AWS_RDS_URL = credential["AWS_RDS_URL"]
-        AWS_RDS_USER = credential["AWS_RDS_USER"]
-        AWS_RDS_PASSWORD = credential["AWS_RDS_PASSWORD"]
 
     # export data to MySQL
     kid_word_count.write.format("jdbc") \
