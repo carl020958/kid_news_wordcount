@@ -12,7 +12,7 @@ class kidNewsSpiderCurrentAffairs(scrapy.Spider):
     articles = 0
     # stop_date = '2020-08-31' # dump
     # stop_date = datetime.strptime(stop_date, "%Y-%m-%d").date() # dump
-    stop_date = datetime.strftime(datetime.now() + timedelta(hours=9) - timedelta(days=1), "%Y-%m-%d") # daily batch
+    stop_date = (datetime.now() + timedelta(hours=9) - timedelta(days=1)).date() # daily batch
     
     
     def start_requests(self):
