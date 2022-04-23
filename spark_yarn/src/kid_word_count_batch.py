@@ -54,11 +54,11 @@ if __name__ == "__main__":
     # make kid_count_id as null for pk, rename columns
     # spark-submit - F.lit(None).cast('string') / pyspark shell - F.lit(0)
     kid_word_count = kid_word_count \
-        .withColumn('count_id', F.lit(None).cast('string')) \
+        .withColumn('id', F.lit(None).cast('string')) \
         .withColumnRenamed("news_date", "count_date") \
         .withColumnRenamed("article_word", "count_word") \
         .withColumnRenamed("count", "count_value") \
-        .select("count_id", "count_date", "count_word", "count_value")
+        .select("id", "count_date", "count_word", "count_value")
         
     # export data to MySQL
     kid_word_count.write.format('jdbc') \
