@@ -32,7 +32,7 @@ def s3_data_load():
         aws_secret_access_key = Variable.get("AWS_SECRET_ACCESS_KEY")
     )
     today = datetime.strftime(datetime.now() + timedelta(hours=9), "%Y-%m-%d")
-    Bucket, path = "nft-kid-news", f"kid_news/{today}"
+    Bucket, path = Variable.get("Bucket"), f'{Variable.get("kid_news_dir")}/{today}'
 
     res = s3_client.list_objects_v2(Bucket=Bucket, Prefix=path, MaxKeys=1)
     return 'Contents' in res
