@@ -1,7 +1,9 @@
 from airflow.models import DAG
 from airflow.models import Variable
-from datetime import datetime, timedelta
 from airflow.contrib.operators.ssh_operator import SSHOperator
+from airflow.operators.python import ShortCircuitOperator
+import boto3
+from datetime import datetime, timedelta
 
 default_args = {
     'owner': 'admin',
@@ -21,6 +23,19 @@ templated_bash_command_scrapy = """
     cd {{params.scrapy_project_dir}}
     scrapy crawl {{params.spider}}
 """ 
+
+def s3_data_load():
+    """check whether data was crawled"""
+    s3_client = boto3.client(
+        "s3", 
+        aws_access_key_id = Variable.get("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key = Variable.get("AWS_SECRET_ACCESS_KEY")
+    )
+    today = datetime.strftime(datetime.now() + timedelta(hours=9), "%Y-%m-%d")
+    Bucket, path = "nft-kid-news", f"kid_news/{today}"
+
+    res = s3_client.list_objects_v2(Bucket=Bucket, Prefix=path, MaxKeys=1)
+    return 'Contents' in res
 
 templated_bash_command_pyspark = """
     {{params.spark_submit}} \
@@ -56,8 +71,8 @@ with DAG(
         "executor_cores": "2",
         "executor_memory": "2048m",
         "conf1": "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem",
-        "conf2": Variable.get("AWS_ACCESS_KEY_ID"),
-        "conf3": Variable.get("AWS_SECRET_ACCESS_KEY"),
+        "conf2": f'spark.hadoop.fs.s3a.access.key={Variable.get("AWS_ACCESS_KEY_ID")}',
+        "conf3": f'spark.hadoop.fs.s3a.secret.key={Variable.get("AWS_SECRET_ACCESS_KEY")}',
         "jars": Variable.get("wordcount_jars_v2"),
         "application": "/opt/workspace/src/kid_word_count_batch_s3.py"
     }
@@ -71,6 +86,12 @@ with DAG(
         dag=dag
     )
 
+    # task to check whether data exists
+    check_s3 = ShortCircuitOperator(
+        task_id="check_s3",
+        python_callable=s3_data_load,
+        dag=dag)
+
     # task for kid wordcount
     kid_wordcount = SSHOperator(
         task_id="kid_wordcount",
@@ -79,4 +100,4 @@ with DAG(
         dag=dag
     )
 
-kid_news_scrapy >> kid_wordcount
+kid_news_scrapy >> check_s3 >> kid_wordcount

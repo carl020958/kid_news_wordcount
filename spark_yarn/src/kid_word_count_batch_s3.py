@@ -4,7 +4,7 @@ from konlpy.tag import Mecab
 import pyspark.sql.functions as F
 from pyspark.sql import types as T
 from typing import List, Set
-from datetime import date
+from datetime import datetime, timedelta
 import re
 import json
 m = Mecab()
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         AWS_RDS_PASSWORD = credential["AWS_RDS_PASSWORD"]
 
     # load data
-    today = date.today().strftime("%Y-%m-%d")
+    today = datetime.strftime(datetime.now() + timedelta(hours=9), "%Y-%m-%d")
     df = spark.read.json(f"s3a://{S3_URL}/{today}*.json")
 
     # apply function
@@ -56,11 +56,11 @@ if __name__ == "__main__":
     # make kid_count_id as null for pk, rename columns
     # spark-submit - F.lit(None).cast("string") / pyspark shell - F.lit(0)
     kid_word_count = kid_word_count \
-        .withColumn("word_count_id", F.lit(None).cast("string")) \
+        .withColumn("id", F.lit(None).cast("string")) \
         .withColumnRenamed("news_date", "date") \
         .withColumnRenamed("article_word", "word") \
         .withColumnRenamed("count", "count") \
-        .select("word_count_id", "date", "word", "count")
+        .select("id", "date", "word", "count")
 
     # export data to MySQL
     kid_word_count.write.format("jdbc") \
