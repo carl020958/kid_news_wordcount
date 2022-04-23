@@ -28,7 +28,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     # load data
-    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
+    today = (datetime.now() + timedelta(hours=9)).replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
     pipeline = '{"$match": {"news_date": {"$gte": ISODate("%s")}}}' % today
     df = spark.read \
         .format("com.mongodb.spark.sql.DefaultSource")\

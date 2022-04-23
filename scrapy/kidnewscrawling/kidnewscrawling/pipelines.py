@@ -33,3 +33,7 @@
 #     def process_item(self, item, spider):
 #         self.db[self.collection_name].insert_one(ItemAdapter(item).asdict())
 #         return item
+
+class KidnewscrawlingPipeline:
+    def process_item(self, item, spider):
+        return 

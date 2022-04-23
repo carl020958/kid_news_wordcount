@@ -26,8 +26,8 @@ if __name__ == "__main__":
         .appName("adult_wordcount") \
         .getOrCreate()
 
-    # load data
-    today = (datetime.today() - timedelta(1)).replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
+    # load data, adults are processed the next day, hence 1 days is subtracted
+    today = (datetime.now() + timedelta(hours=9) - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + ".000Z"
     pipeline = '{"$match": {"news_date": {"$gte": ISODate("%s")}}}' % today
     df = spark.read \
         .format("com.mongodb.spark.sql.DefaultSource")\
